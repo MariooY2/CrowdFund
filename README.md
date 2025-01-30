@@ -31,8 +31,8 @@ Before running the project, make sure you have the following installed:
 ### 1️⃣ Clone the Repository  
 
 ```sh
-git clone https://github.com/YOUR_GITHUB_USERNAME/crowdfunding-dapp.git
-cd crowdfunding-dapp
+git clone https://github.com/MariooY2/CrowdFund
+cd CrowdFund
 ```
 ### 2️⃣ Install Dependencies  
 
