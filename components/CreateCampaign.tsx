@@ -194,9 +194,11 @@ const CreateCampaignPage = () => {
                         value={formData.target}
                         onChange={handleChange}
                         step="0.01"
+                        min="0.1"
                         className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                         placeholder="0.00"
                         required
+                        
                       />
                     </div>
 

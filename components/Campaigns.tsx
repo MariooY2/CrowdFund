@@ -13,7 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import ContractData from "../public/Crowdfunding.json";
 import { Progress } from "@/components/ui/progress";
 import { formatEther, parseEther } from "viem";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import DonateModal from "../components/DonateModal";
 import ViewDetailsModal from "./ViewDetailsModal";
 import { useToast } from "@/hooks/use-toast";
@@ -23,6 +23,7 @@ const CampaignsPage = () => {
   const account = useAccount();
   const [selectedCampaign, setSelectedCampaign] = useState<number | null>(null);
   const [isDonateModalOpen, setIsDonateModalOpen] = useState(false);
+  const [filterOption, setFilterOption] = useState("mostRecent");
   const ContractAddress = "0x5fbdb2315678afecb367f032d93f642f64180aa3";
   const { toast } = useToast();
   const { writeContractAsync } = useWriteContract();
@@ -33,6 +34,15 @@ const CampaignsPage = () => {
     functionName: "getAllCampaigns",
   });
   const { data: Campaigns, isLoading: Campaignsloading } = CampaignsQuery;
+  console.log(Campaigns);
+
+  const CountQuery = useReadContract({
+    abi: ContractData.abi,
+    address: ContractAddress,
+    functionName: "getAllCampaigns",
+  });
+  const { data: count } = CountQuery;
+  console.log(count);
 
   const calculateDaysLeft = (deadline) => {
     const now = Math.floor(Date.now() / 1000);
@@ -40,6 +50,35 @@ const CampaignsPage = () => {
     const daysLeft = Math.ceil(secondsLeft / (24 * 60 * 60));
     return daysLeft > 0 ? daysLeft : 0;
   };
+
+  const filteredCampaigns = useMemo(() => {
+    if (!Array.isArray(Campaigns)) return [];
+
+    const sorted = [...Campaigns];
+
+    switch (filterOption) {
+      case "mostRecent":
+        // Sort by creation time (assuming higher IDs are more recent)
+        sorted.sort((a, b) => Number(b.id) - Number(a.id));
+        break;
+      case "mostFunded":
+        // Sort by absolute total funds
+        sorted.sort((a, b) => Number(b.totalFunds) - Number(a.totalFunds));
+        break;
+      case "endingSoon":
+        // Sort by days remaining
+        sorted.sort((a, b) => {
+          const daysLeftA = calculateDaysLeft(a.deadline);
+          const daysLeftB = calculateDaysLeft(b.deadline);
+          return daysLeftA - daysLeftB;
+        });
+        break;
+      default:
+        return sorted;
+    }
+
+    return sorted;
+  }, [Campaigns, filterOption]);
 
   const handleDonate = async (amount) => {
     if (selectedCampaign === null) return;
@@ -51,6 +90,10 @@ const CampaignsPage = () => {
       value: parseEther(amount.toString()),
     });
     CampaignsQuery.refetch?.();
+    toast({
+      title: `Thanks for Donating ${amount} ETH`,
+     
+    });
   };
 
   const openDonateModal = (campaignIndex: bigint) => {
@@ -64,6 +107,7 @@ const CampaignsPage = () => {
     setSelectedCampaign(Number(campaignIndex));
     setIsDonateModalOpen(true);
   };
+
   const withdraw = async (Id: number) => {
     writeContractAsync({
       abi: ContractData.abi,
@@ -86,10 +130,14 @@ const CampaignsPage = () => {
         <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:justify-between sm:items-center mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold">Active Campaigns</h1>
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-            <select className="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 w-full sm:w-auto text-sm">
-              <option>Most Recent</option>
-              <option>Most Funded</option>
-              <option>Ending Soon</option>
+            <select
+              className="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 w-full sm:w-auto text-sm"
+              value={filterOption}
+              onChange={(e) => setFilterOption(e.target.value)}
+            >
+              <option value="mostRecent">Most Recent</option>
+              <option value="mostFunded">Most Funded</option>
+              <option value="endingSoon">Ending Soon</option>
             </select>
             <Link href={"/create"}>
               <button className="bg-blue-600 hover:bg-blue-700 px-4 sm:px-6 py-2 rounded-lg text-sm whitespace-nowrap w-full sm:w-auto">
@@ -129,8 +177,7 @@ const CampaignsPage = () => {
                   </CardFooter>
                 </Card>
               ))
-            : Array.isArray(Campaigns) &&
-              Campaigns.map((campaign, index) => {
+            : filteredCampaigns.map((campaign) => {
                 const daysLeft = calculateDaysLeft(campaign.deadline);
                 const progressPercentage =
                   (Number(campaign.totalFunds) / Number(campaign.goal)) * 100;
@@ -146,7 +193,6 @@ const CampaignsPage = () => {
                         alt={campaign.title}
                         fill
                         className="object-cover rounded-t-lg"
-                        priority={index < 3}
                       />
                     </div>
                     <CardHeader>
@@ -206,7 +252,6 @@ const CampaignsPage = () => {
                           Donate
                         </button>
                       )}
-
                       {daysLeft <= 0 && (
                         <button className="bg-red-600 hover:bg-red-700 py-2 px-3 sm:px-4 rounded-lg transition-colors text-sm">
                           Closed

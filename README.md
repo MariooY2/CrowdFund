@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 Decentralized Crowdfunding DApp  
 
-## Getting Started
+A decentralized crowdfunding platform built with **Next.js**, **ShadCN**, **Wagmi**, **Viem**, **RainbowKit**, and **TailwindCSS**. Smart contracts are developed and deployed using **Hardhat**. IPFS (Storcha) is used for decentralized image storage.  
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 📌 Features
+- 🏗 **Smart contract-based crowdfunding**  
+- 🌐 **Next.js frontend with ShadCN UI**  
+- 🔗 **Web3 wallet integration (RainbowKit + Wagmi + Viem)**  
+- 🎨 **Styled with TailwindCSS**  
+- 📦 **Decentralized image storage using IPFS (Storcha)**  
+- 🔥 **Hardhat for contract development & deployment**  
+
+---
+
+## 🛠️ Prerequisites  
+
+Before running the project, make sure you have the following installed:  
+
+- **[Node.js](https://nodejs.org/) v16+** (LTS recommended)  
+- **[npm](https://www.npmjs.com/)**  
+- **[Hardhat](https://hardhat.org/)** (for smart contract development)  
+- **[MetaMask](https://metamask.io/)** or any Web3 wallet  
+- **[IPFS Storcha](https://www.pinata.cloud/)** for storing images  
+
+---
+
+## 🚀 Getting Started  
+
+### 1️⃣ Clone the Repository  
+
+```sh
+git clone https://github.com/YOUR_GITHUB_USERNAME/crowdfunding-dapp.git
+cd crowdfunding-dapp
 ```
+### 2️⃣ Install Dependencies  
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+```sh
+npm run install:all 
+```
+### 3️⃣  Run Frontend and Local Blockchain on 2 terminals
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+  ```sh
+npm run dev
+```
+  ```sh
+cd hardhat
+npx hardhat node
+```
+### 4️⃣ Deploy the Smart Contract(inside the hardhat directory)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```sh
+npx hardhat run /scripts/DeployContract.ts --network localhost
+```
+### 4️⃣ Setup Enviromental variables
+- setup IPFS storage enviromental variables
+- rename .env.example to .env I have added 2 private keys
 
-## Learn More
+### 5️⃣ Connect Wallet & Start Using the DApp  
 
-To learn more about Next.js, take a look at the following resources:
+- Open your browser and go to `http://localhost:3000`  
+- Connect your Web3 wallet (MetaMask or any supported wallet)  
+- Start creating and funding campaigns! 🚀  
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🤝 Contributing  
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Contributions are welcome! Feel free to open issues or submit pull requests. 
 
-## Deploy on Vercel
+## 📬 Contact  
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+For any inquiries or suggestions, feel free to reach out:  
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- GitHub: [@MariooY2](https://github.com/MariooY2)  
+- Twitter: [@MarioY00](https://twitter.com/@MarioY00)  
+
+🚀 **Happy Building!** 🎉
