@@ -60,7 +60,7 @@ const CreateCampaignPage = () => {
 
       const tx = await writeContractAsync({
         abi: ContractData.abi,
-        address: "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+        address: "0x6d622a2180c57ff2d44b2a8c1ce53711ef36e319",
         functionName: "createCampaign",
         args: [
           formData.title,
@@ -90,8 +90,18 @@ const CreateCampaignPage = () => {
   };
 
   const handleImageUpload = (e) => {
+    const MAX_IMAGE_SIZE = 1024 * 1024;
     const file = e.target.files[0];
     if (file) {
+      if (file.size > MAX_IMAGE_SIZE) {
+        toast({
+          title: "Error",
+          description: "Image size must be less than 1MB",
+          variant: "destructive",
+        });
+        return;
+      }
+
       setFormData((prev) => ({ ...prev, image: file }));
 
       // Create preview URL
@@ -198,7 +208,6 @@ const CreateCampaignPage = () => {
                         className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                         placeholder="0.00"
                         required
-                        
                       />
                     </div>
 

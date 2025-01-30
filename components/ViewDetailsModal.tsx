@@ -24,12 +24,14 @@ interface ViewDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   campaign: Campaign | null;
+  handlerefund: (id:number) => void;
 }
 
 const ViewDetailsModal = ({
   isOpen,
   onClose,
   campaign,
+  handlerefund,
 }: ViewDetailsModalProps) => {
   if (!campaign) return null;
 
@@ -59,7 +61,6 @@ const ViewDetailsModal = ({
             {campaign.title}
           </DialogTitle>
         </DialogHeader>
-
         <div className="space-y-6 mt-4">
           {/* Campaign Image */}
           <div className="relative w-full h-48 sm:h-64 lg:h-72 rounded-lg overflow-hidden">
@@ -71,7 +72,6 @@ const ViewDetailsModal = ({
               priority
             />
           </div>
-
           {/* Progress Section */}
           <div className="space-y-3">
             <Progress
@@ -89,7 +89,6 @@ const ViewDetailsModal = ({
               </span>
             </div>
           </div>
-
           {/* Campaign Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <div className="bg-gray-700 p-4 rounded-lg">
@@ -101,7 +100,6 @@ const ViewDetailsModal = ({
                 {progressPercentage.toFixed(1)}%
               </p>
             </div>
-
             <div className="bg-gray-700 p-4 rounded-lg">
               <div className="flex items-center gap-2 text-green-400 mb-2">
                 <Users size={20} className="shrink-0" />
@@ -109,7 +107,6 @@ const ViewDetailsModal = ({
               </div>
               <p className="text-lg sm:text-xl font-bold">Private</p>
             </div>
-
             <div className="bg-gray-700 p-4 rounded-lg">
               <div className="flex items-center gap-2 text-yellow-400 mb-2">
                 <Timer size={20} className="shrink-0" />
@@ -119,7 +116,6 @@ const ViewDetailsModal = ({
                 {calculateDaysLeft(campaign.deadline)}
               </p>
             </div>
-
             <div className="bg-gray-700 p-4 rounded-lg">
               <div className="flex items-center gap-2 text-purple-400 mb-2">
                 <Calendar size={20} className="shrink-0" />
@@ -130,7 +126,6 @@ const ViewDetailsModal = ({
               </p>
             </div>
           </div>
-
           {/* Description */}
           <div className="space-y-3">
             <h3 className="text-lg sm:text-xl font-semibold">
@@ -140,7 +135,6 @@ const ViewDetailsModal = ({
               {campaign.description}
             </p>
           </div>
-
           {/* Creator Info */}
           <div className="bg-gray-700 p-4 rounded-lg space-y-2">
             <h3 className="text-base sm:text-lg font-semibold">
@@ -149,6 +143,17 @@ const ViewDetailsModal = ({
             <p className="text-gray-300 text-sm break-all font-mono">
               {campaign.creator}
             </p>
+          </div>
+          {/* Refund Button */}
+          <div className="flex justify-center">
+            <button
+              className="bg-blue-600 hover:bg-blue-700 py-2 px-3 sm:px-4 rounded-lg transition-colors text-sm"
+              onClick={() => {
+                handlerefund(Number(campaign.id));
+              }}
+            >
+              Request Refund
+            </button>
           </div>
         </div>
       </DialogContent>

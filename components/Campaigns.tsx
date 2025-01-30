@@ -24,7 +24,7 @@ const CampaignsPage = () => {
   const [selectedCampaign, setSelectedCampaign] = useState<number | null>(null);
   const [isDonateModalOpen, setIsDonateModalOpen] = useState(false);
   const [filterOption, setFilterOption] = useState("mostRecent");
-  const ContractAddress = "0x5fbdb2315678afecb367f032d93f642f64180aa3";
+  const ContractAddress = "0x6d622a2180c57ff2d44b2a8c1ce53711ef36e319";
   const { toast } = useToast();
   const { writeContractAsync } = useWriteContract();
 
@@ -92,7 +92,6 @@ const CampaignsPage = () => {
     CampaignsQuery.refetch?.();
     toast({
       title: `Thanks for Donating ${amount} ETH`,
-     
     });
   };
 
@@ -109,12 +108,22 @@ const CampaignsPage = () => {
   };
 
   const withdraw = async (Id: number) => {
-    writeContractAsync({
+    await writeContractAsync({
       abi: ContractData.abi,
       address: ContractAddress,
       functionName: "withdrawFunds",
       args: [Id],
     });
+    CampaignsQuery.refetch?.();
+  };
+  const refund = async (Id: number) => {
+    await writeContractAsync({
+      abi: ContractData.abi,
+      address: ContractAddress,
+      functionName: "refund",
+      args: [Id],
+    });
+    CampaignsQuery.refetch?.();
   };
 
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
@@ -179,9 +188,14 @@ const CampaignsPage = () => {
               ))
             : filteredCampaigns.map((campaign) => {
                 const daysLeft = calculateDaysLeft(campaign.deadline);
+                let value: number;
                 const progressPercentage =
                   (Number(campaign.totalFunds) / Number(campaign.goal)) * 100;
-
+                if (progressPercentage > 100) {
+                  value = 100;
+                } else {
+                  value = progressPercentage;
+                }
                 return (
                   <Card
                     key={campaign.id}
@@ -211,7 +225,7 @@ const CampaignsPage = () => {
                               ? "bg-red-500"
                               : "bg-green-500"
                           }`}
-                          value={progressPercentage}
+                          value={value}
                         />
                         <div className="flex flex-col sm:flex-row justify-between gap-2 text-sm text-white">
                           <span className="whitespace-nowrap">
@@ -244,9 +258,9 @@ const CampaignsPage = () => {
                             Withdraw
                           </button>
                         )}
-                      {campaign.totalFunds < campaign.goal && daysLeft > 0 && (
+                      {daysLeft > 0 && (
                         <button
-                          className="bg-green-600 hover:bg-green-700 py-2 px-3 sm:px-4 rounded-lg transition-colors text-sm"
+                          className="bg-blue-600 hover:bg-blue-700 py-2 px-3 sm:px-4 rounded-lg transition-colors text-sm"
                           onClick={() => openDonateModal(campaign.id)}
                         >
                           Donate
@@ -271,6 +285,7 @@ const CampaignsPage = () => {
           isOpen={isDetailsModalOpen}
           onClose={() => setIsDetailsModalOpen(false)}
           campaign={selectedCampaignDetails}
+          handlerefund={refund}
         />
       </div>
     </div>
