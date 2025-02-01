@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitAny": false, // Disable the 'implicitly has an "any" type' error
+    "skipLibCheck": true,
+    "resolveJsonModule": true
+  }
+}
