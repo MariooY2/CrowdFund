@@ -1,11 +1,16 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Info, X } from "lucide-react";
 import ContractData from "../public/Crowdfunding.json";
 import { parseEther } from "viem";
-import { useWalletClient, useAccount, useWriteContract } from "wagmi";
+import {
+  useWalletClient,
+  useAccount,
+  useWriteContract,
+  useWaitForTransactionReceipt,
+} from "wagmi";
 import { create } from "@web3-storage/w3up-client";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
@@ -26,6 +31,17 @@ const CreateCampaignPage = () => {
   });
   const [imagePreview, setImagePreview] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [txHash, setTxHash] = useState<`0x${string}` | undefined>();
+
+  const {
+    data: receipt,
+    isSuccess,
+    isError,
+    error,
+  } = useWaitForTransactionReceipt({
+    hash: txHash,
+    confirmations: 1,
+  });
 
   const uploadImageToIPFS = async (file) => {
     if (!file) throw new Error("No image file selected.");
@@ -70,19 +86,33 @@ const CreateCampaignPage = () => {
           deadlineTimestamp,
         ],
       });
-
-      toast({
-        title: "Campaign Created Successfully",
-        description: `tx hash: ${tx}`,
-      });
-      router.push("/campaigns");
+      setTxHash(tx);
     } catch (error) {
       console.error("Error creating campaign:", error);
-      alert("Failed to create campaign. Please try again.");
-    } finally {
-      setIsLoading(false);
+      toast({
+        title: "Failed to create campaign",
+      });
     }
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast({
+        title: "Campaign Created Successfully",
+        description: `Confirmed in block ${receipt.blockNumber}`,
+      });
+      router.push("/campaigns");
+      setIsLoading(false);
+    }
+
+    if (isError) {
+      toast({
+        title: "Transaction Failed",
+        description: error.message,
+      });
+      setIsLoading(false);
+    }
+  }, [isSuccess, isError]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
